@@ -1,0 +1,7 @@
+/draft
+*.eps
+*.log
+*.txt
+!requirements.txt
+*.sublime-project
+*.sublime-workspace
