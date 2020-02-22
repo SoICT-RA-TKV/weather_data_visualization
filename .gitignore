@@ -1,7 +1,10 @@
 /draft
 *.eps
+*.png
 *.log
 *.txt
 !requirements.txt
 *.sublime-project
 *.sublime-workspace
+__pycache__
+*.zip

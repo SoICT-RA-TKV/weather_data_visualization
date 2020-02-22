@@ -1,102 +1,76 @@
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import numpy as np
 from collections import namedtuple
-from datetime import datetime
+from datetime import datetime, timedelta
+from airbox_data import *
+from rxpower_data import *
+from darksky_data import *
+from openweathermap_data import *
+from wunderground_data import *
+import os
 
 # Danh sach file input
-airbox_files = ['2020-02-17.txt']
-rxpower_files = ['rx614b_1.log', 'rx614b_2.log', 'rx614b_3.log', 'rx614b_4.log', 'rx614b_5.log', 'rx614b_6.log',
-'rx614b_7.log', 'rx614b_8.log', 'rx614b_9.log']
+airbox_files = os.listdir('airbox/')
+rxpower_files = os.listdir('rxpower/')
+darksky_files = os.listdir('darksky/')
+openweathermap_files = os.listdir('openweathermap/')
+wunderground_files = os.listdir('wunderground/')
 
 def main():
 	plot_signals = []
-	airbox_data(plot_signals)
-	rxpower_data(plot_signals)
-	# Ve do thi
-	fig, ax = plt.subplots()
+	airbox_data(plot_signals, airbox_files)
+	darksky_data(plot_signals, darksky_files)
+	openweathermap_data(plot_signals, openweathermap_files)
+	wunderground_data(plot_signals, wunderground_files)
+	rxpower_data(plot_signals, rxpower_files)
+	# Tach mang du lieu theo ngay
+	min_time = datetime.max
+	max_time = datetime.min
 	for signal in plot_signals:
-		ax.plot(signal['x'], signal['y'], label = signal['name'])
-	ax.legend()
-	plt.title('PM data')
-	plt.savefig('plot.eps', format='eps')
-	plt.show()
+		min_time = min(min_time, signal['x'][0])
+		max_time = max(max_time, signal['x'][-1])
+	min_time += timedelta(hours = -min_time.hour, minutes = -min_time.minute,
+		seconds = -min_time.second, microseconds = -min_time.microsecond)
+	if (max_time.hour > 0) or (max_time.minute > 0) or (max_time.second > 0) or (max_time.microsecond > 0):
+		max_time += timedelta(days = 1, hours = -max_time.hour, minutes = -max_time.minute,
+			seconds = -max_time.second, microseconds = -max_time.microsecond)
+	i_time = min_time
+	while i_time < max_time:
+		data_plot(plot_signals, i_time)
+		i_time += timedelta(days = 1)
 
-NaN = np.NaN
-
-# Xu ly du lieu airbox
-def airbox_data(plot_signals):
-	airbox_data_fields = ['Time', 'PM1', 'PM25', 'PM10', 'Temperature', 'Humidity']
-	airbox_data_fields_plot_mask = [1, 1, 1, 1, 1, 1]
-	airbox_files.sort()
-	airbox_data = dict()
-	for airbox_data_field in airbox_data_fields:
-		airbox_data[airbox_data_field] = []
-
-	for airbox_file in airbox_files:
-		file = open(airbox_file, 'r')
-		file.readline()
-		while True:
-			data = file.readline()
-			if data == None:
-				break
-			data = data.replace(',', '').split()
-			if len(data) < len(airbox_data_fields):
-				break
-			datetime_string = airbox_file.replace('.txt', ' ') + data[0]
-			data[0] = datetime.strptime(datetime_string, '%Y-%m-%d %H:%M')
-			if (len(airbox_data['Time']) > 0) and (data[0] <= airbox_data['Time'][-1]):
-				continue
-			is_no_signal = True
-			for i in range(1, len(data)):
-				data[i] = float(data[i])
-				if data[i] > 0:
-					is_no_signal = False
-			if is_no_signal:
-				for i in range(1, len(data)):
-					data[i] = NaN
-			for i in range(len(data)):
-				airbox_data[airbox_data_fields[i]].append(data[i])
-
-	# Them du lieu airbox vao danh sach ve do thi
-	for i in range(1, len(airbox_data_fields)):
-		if airbox_data_fields_plot_mask[i] == 1:
-			plot_signals.append(
-				{'name': airbox_data_fields[i],
-				'x': np.array(airbox_data[airbox_data_fields[0]]),
-				'y': np.array(airbox_data[airbox_data_fields[i]])
-				})
-
-# Xu ly du lieu RXPower
-def rxpower_data(plot_signals):
-	rxpower_files.sort()
-	rxpower_data = dict({
-		'Time': [],
-		'Power': []
-		})
-	for rxpower_file in rxpower_files:
-		file = open(rxpower_file, 'r')
-		while True:
-			tmp_data = file.readline()
-			if tmp_data == None:
-				break
-			if tmp_data.find('***') >= 0 or tmp_data.find('CONFIG:') >= 0:
-				continue
-			tmp_data = tmp_data.split(',')
-			if len(tmp_data) < 4:
-				break
-			datetime_string = tmp_data[0] + ' ' + tmp_data[1]
-			tmp_datetime = datetime.strptime(datetime_string, '%m/%d/%Y %H:%M:%S')
-			if (len(rxpower_data['Time']) > 0) and (tmp_datetime <= rxpower_data['Time'][-1]):
-				continue
-			rxpower_data['Time'].append(tmp_datetime)
-			rxpower_data['Power'].append(float(tmp_data[2]))
-
-	# Them du lieu RXPower vao danh sach ve do thi
-	plot_signals.append(
-		{'name': 'RXPower',
-		'x': np.array(rxpower_data['Time']),
-		'y': np.array(rxpower_data['Power'])
-		})
+# Ve do thi
+def data_plot(plot_signals, date):
+	date_str = date.strftime("%Y-%m-%d")
+	print("Plotting data:", date_str)
+	ax = 0
+	save = False
+	def find(dates, date):
+		first = 0
+		while (first < len(dates)) and (dates[first] - date < timedelta()):
+			first += 1
+		last = first
+		tmp_date = date + timedelta(days = 1)
+		while (last < len(dates)) and (dates[last] - tmp_date < timedelta()):
+			last += 1
+		return first, last
+	for signal in plot_signals:
+		first, last = find(signal['x'], date)
+		if first >= last:
+			continue
+		if not save:
+			fig, ax = plt.subplots(figsize = (16, 9))
+			save = True
+		ax.plot(signal['x'][first:last], signal['y'][first:last], label = signal['name'])
+	if save:
+		ax.legend()
+		plt.rcParams.update({'font.size': 6, 'figure.figsize': (16, 9)})
+		plt.title('Weather and Signal Data ' + date_str)
+		plt.savefig('plot/esp/plot_' + date_str + '.eps', format='eps')
+		plt.savefig('plot/png/plot_' + date_str + '.png', format='png')
+		plt.close()
+		# plt.show()
 
 if __name__ == '__main__':
 	main()
