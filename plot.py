@@ -19,11 +19,11 @@ wunderground_files = os.listdir('wunderground/')
 
 def main():
 	plot_signals = []
+	rxpower_data(plot_signals, rxpower_files)
 	airbox_data(plot_signals, airbox_files)
 	darksky_data(plot_signals, darksky_files)
 	openweathermap_data(plot_signals, openweathermap_files)
 	wunderground_data(plot_signals, wunderground_files)
-	rxpower_data(plot_signals, rxpower_files)
 	# Tach mang du lieu theo ngay
 	min_time = datetime.max
 	max_time = datetime.min
@@ -55,6 +55,8 @@ def data_plot(plot_signals, date):
 		while (last < len(dates)) and (dates[last] - tmp_date < timedelta()):
 			last += 1
 		return first, last
+	first = 0
+	last = 0
 	for signal in plot_signals:
 		first, last = find(signal['x'], date)
 		if first >= last:
@@ -62,15 +64,24 @@ def data_plot(plot_signals, date):
 		if not save:
 			fig, ax = plt.subplots(figsize = (16, 9))
 			save = True
-		ax.plot(signal['x'][first:last], signal['y'][first:last], label = signal['name'])
+		if 'style' in signal:
+			ax.plot(signal['x'][first:last], signal['y'][first:last], signal['style'], label = signal['name'])
+		else:
+			ax.plot(signal['x'][first:last], signal['y'][first:last], label = signal['name'])
+
+	# x = np.arange(datetime.timestamp(plot_signals[-1]['Time'][first]), datetime.timestamp(plot_signals[-1]['Time'][first]), 1)
+	# y = np.arange(-10, 10, 0.1)
+	# X, Y = np.meshgrid(x, y)
+	# im = ax.imshow(X, cmap=plt.cm.get_cmap('RdBu'), interpolation='bilinear')
+
 	if save:
 		ax.legend()
 		plt.rcParams.update({'font.size': 6, 'figure.figsize': (16, 9)})
 		plt.title('Weather and Signal Data ' + date_str)
 		plt.savefig('plot/esp/plot_' + date_str + '.eps', format='eps')
 		plt.savefig('plot/png/plot_' + date_str + '.png', format='png')
-		plt.close()
 		# plt.show()
+		# plt.close()
 
 if __name__ == '__main__':
 	main()
