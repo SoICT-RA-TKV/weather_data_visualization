@@ -4,22 +4,29 @@ import numpy as np
 from collections import namedtuple
 from datetime import datetime, timedelta
 from utils import *
+import pymongo
+import json
+import os
+
+mongo_client = pymongo.MongoClient("mongodb://sv2.teambit.tech:27017/")
+weather_db = mongo_client['weather']
+darksky_col = weather_db['darksky']
 
 NaN = np.NaN
 
 # Xu ly du lieu darksky
-def darksky_data(plot_signals, darksky_files):
+def darksky_data(darksky_files):
 	print("Preprocessing darksky data")
 	darksky_data_fields = ['Time', 'Darksky_Summary', 'Darksky_Icon', 'Darksky_PrecipIntensity', 'Darksky_PrecipProbability',
 		'Darksky_PrecipType', 'Darksky_Temperature', 'Darksky_ApparentTemperature',
 		'Darksky_DewPoint', 'Darksky_Humidity', 'Darksky_Pressure',
 		'Darksky_WinSpeed', 'Darksky_WindGust', 'Darksky_WindBearing',
 		'Darksky_CloudCover', 'Darksky_UVIndex', 'Darksky_Visibility', 'Darksky_Ozone']
-	darksky_data_fields_plot_mask = [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	darksky_data = dict()
-	tmp_darksky_data = dict()
+
+	darksky_data = []
 
 	for darksky_file in darksky_files:
+		print(darksky_file)
 		file = open('./darksky/' + darksky_file, 'r')
 		file.readline()
 		while True:
@@ -36,38 +43,19 @@ def darksky_data(plot_signals, darksky_files):
 				try:
 					data[i] = float(data[i])
 				except:
-					data[i] = NaN
+					data[i] = data[i]
 				if data[i] != 0:
 					is_no_signal = False
 			if is_no_signal:
-				for i in range(1, len(data)):
+				for i in range(1, len(darksky_data_fields)):
 					data[i] = NaN
-			tmp_datetime = data[0].timestamp()
-			tmp_darksky_data[tmp_datetime] = dict()
-			for i in range(1, len(darksky_data_fields)):
-				if darksky_data_fields[i] == 0:
-					continue
-				tmp_darksky_data[tmp_datetime][darksky_data_fields[i]] = data[i]
+			tmp_data = dict()
+			for i in range(len(darksky_data_fields)):
+				tmp_data[darksky_data_fields[i]] = data[i]
+			darksky_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
+			# print(tmp_data)
+			# print(darksky_col.find_one({'Time': data[0]}))
 
-	darksky_data['Time'] = sorted(list(tmp_darksky_data))
-	for j in range(1, len(darksky_data_fields)):
-		if darksky_data_fields_plot_mask[j] == 0:
-			continue
-		darksky_data[darksky_data_fields[j]] = []
-		for i in range(len(darksky_data['Time'])):
-			darksky_data[darksky_data_fields[j]].append(tmp_darksky_data[darksky_data['Time'][i]][darksky_data_fields[j]])
-	for i in range(len(darksky_data['Time'])):
-		darksky_data['Time'][i] = datetime.fromtimestamp(darksky_data['Time'][i])
 
-	darksky_data['Darksky_PrecipIntensity'] = [i * 1000 for i in darksky_data['Darksky_PrecipIntensity']]
-	darksky_data['Darksky_PrecipIntensity'] = normalize(darksky_data['Darksky_PrecipIntensity'], 0, 50)
-
-	# Them du lieu darksky vao danh sach ve do thi
-	for i in range(1, len(darksky_data_fields)):
-		if darksky_data_fields_plot_mask[i] == 1:
-			plot_signals.append(
-				{'name': darksky_data_fields[i] + ' 0-50(mm/h)',
-				'style': 'b-',
-				'x': np.array(darksky_data[darksky_data_fields[0]]),
-				'y': np.array(darksky_data[darksky_data_fields[i]])
-				})
+if __name__ == '__main__':
+	darksky_data(os.listdir('darksky/'))

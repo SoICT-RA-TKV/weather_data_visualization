@@ -4,20 +4,27 @@ import numpy as np
 from collections import namedtuple
 from datetime import datetime, timedelta
 from utils import *
+import pymongo
+import json
+import os
+
+mongo_client = pymongo.MongoClient("mongodb://sv2.teambit.tech:27017/")
+weather_db = mongo_client['weather']
+wunderground_col = weather_db['wunderground']
 
 NaN = np.NaN
 
 # Xu ly du lieu wunderground
-def wunderground_data(plot_signals, wunderground_files):
+def wunderground_data(wunderground_files):
 	print("Preprocessing wunderground data")
 	wunderground_data_fields = ['Time', 'Wunderground_Temperature', 'Wunderground_DewPoint', 'Wunderground_Humidity', 'Wunderground_Wind',
 		'Wunderground_WindSpeed', 'Wunderground_WindGust', 'Wunderground_Pressure',
 		'Wunderground_Condition', 'Wunderground_Visibility']
-	wunderground_data_fields_plot_mask = [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-	wunderground_data = dict()
-	tmp_wunderground_data = dict()
+
+	wunderground_data = []
 
 	for wunderground_file in wunderground_files:
+		print(wunderground_file)
 		file = open('./wunderground/' + wunderground_file, 'r')
 		file.readline()
 		while True:
@@ -34,39 +41,21 @@ def wunderground_data(plot_signals, wunderground_files):
 				try:
 					data[i] = float(data[i])
 				except:
-					data[i] = NaN
+					pass
 				if data[i] != 0:
 					is_no_signal = False
 			if is_no_signal:
 				for i in range(1, len(wunderground_data_fields)):
 					data[i] = NaN
-			tmp_datetime = data[0].timestamp()
-			tmp_wunderground_data[tmp_datetime] = dict()
-			for i in range(1, len(wunderground_data_fields)):
-				if wunderground_data_fields[i] == 0:
-					continue
-				tmp_wunderground_data[tmp_datetime][wunderground_data_fields[i]] = data[i]
+			tmp_data = dict()
+			for i in range(len(wunderground_data_fields)):
+				if wunderground_data_fields[i] == 'Wunderground_Condition':
+					data[i] = data[i].split()[0]
+				tmp_data[wunderground_data_fields[i]] = data[i]
+			wunderground_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
+			# print(tmp_data)
+			# print(wunderground_col.find_one({'Time': data[0]}))
 
-	wunderground_data = dict()
-	wunderground_data['Time'] = sorted(list(tmp_wunderground_data))
-	for j in range(1, len(wunderground_data_fields)):
-		if wunderground_data_fields_plot_mask[j] == 0:
-			continue
-		wunderground_data[wunderground_data_fields[j]] = []
-		for i in range(len(wunderground_data['Time'])):
-			wunderground_data[wunderground_data_fields[j]].append(tmp_wunderground_data[wunderground_data['Time'][i]][wunderground_data_fields[j]])
-	for i in range(len(wunderground_data['Time'])):
-		wunderground_data['Time'][i] = datetime.fromtimestamp(wunderground_data['Time'][i])
 
-	wunderground_data['Wunderground_Visibility'] = [i * 1609.344 for i in wunderground_data['Wunderground_Visibility']]
-	wunderground_data['Wunderground_Visibility'] = normalize(wunderground_data['Wunderground_Visibility'], 0, 10000)
-
-	# Them du lieu wunderground vao danh sach ve do thi
-	for i in range(1, len(wunderground_data_fields)):
-		if wunderground_data_fields_plot_mask[i] == 1:
-			plot_signals.append(
-				{'name': wunderground_data_fields[i] + ' 0 - 10000(m)',
-				'style': 'go-',
-				'x': np.array(wunderground_data[wunderground_data_fields[0]]),
-				'y': np.array(wunderground_data[wunderground_data_fields[i]])
-				})
+if __name__ == '__main__':
+	wunderground_data(os.listdir('wunderground/'))

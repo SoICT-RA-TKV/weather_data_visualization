@@ -1,0 +1,19 @@
+{
+	"heavy_intensity_rain": 0,
+	"thunderstorm_with_light_rain": 1,
+	"few_clouds": 2,
+	"fog": 3,
+	"light_intensity_drizzle": 4,
+	"drizzle": 5,
+	"thunderstorm_with_rain": 6,
+	"moderate_rain": 7,
+	"light_rain": 8,
+	"thunderstorm": 9,
+	"overcast_clouds": 10,
+	"clear_sky": 11,
+	"haze": 12,
+	"broken_clouds": 13,
+	"mist": 14,
+	"thunderstorm_with_heavy_rain": 15,
+	"scattered_clouds": 16
+}

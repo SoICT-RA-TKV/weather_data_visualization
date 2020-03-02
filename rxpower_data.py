@@ -4,42 +4,54 @@ import numpy as np
 from collections import namedtuple
 from datetime import datetime, timedelta
 from utils import *
+import pymongo
+import json
+import os
+
+mongo_client = pymongo.MongoClient("mongodb://sv2.teambit.tech:27017/")
+weather_db = mongo_client['weather']
+rxpower_col = weather_db['rxpower']
 
 NaN = np.NaN
 
-# Xu ly du lieu RXPower
-def rxpower_data(plot_signals, rxpower_files):
+# Xu ly du lieu rxpower
+def rxpower_data(rxpower_files):
 	print("Preprocessing rxpower data")
-	rxpower_data = dict({
-		'Time': [],
-		'Power': []
-		})
-	tmp_rxpower_data = dict()
+	rxpower_data_fields = ['Time', 'Power']
+
+	rxpower_data = []
+	loss = 0
+
+	if rxpower_col.find_one({'Time': 'hihi'}) == None:
+		print("Hello")
+
 	for rxpower_file in rxpower_files:
-		file = open('rxpower/' + rxpower_file, 'r')
+		print(rxpower_file)
+		file = open('./rxpower/' + rxpower_file, 'r')
 		while True:
-			tmp_data = file.readline()
-			if tmp_data == None:
+			data = file.readline()
+			if data == None:
 				break
-			if tmp_data.find('***') >= 0 or tmp_data.find('CONFIG:') >= 0:
+			if (data.find("***") >= 0) or (data.find("CONFIG") >= 0):
 				continue
-			tmp_data = tmp_data.split(',')
-			if len(tmp_data) < 4:
+			data = data.split(',')
+			if len(data) < 4:
 				break
-			datetime_string = tmp_data[0] + ' ' + tmp_data[1]
-			tmp_datetime = datetime.strptime(datetime_string, '%m/%d/%Y %H:%M:%S')
-			tmp_rxpower_data[tmp_datetime.timestamp()] = float(tmp_data[2])
+			datetime_string = data[0] + ' ' + data[1]
+			data[0] = datetime.strptime(datetime_string, '%m/%d/%Y %H:%M:%S')
+			data[1] = float(data[2])
+			tmp_data = dict()
+			for i in range(len(rxpower_data_fields)):
+				tmp_data[rxpower_data_fields[i]] = data[i]
+			# rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
+			# print(tmp_data)
+			# print(rxpower_col.find_one({'Time': data[0]}))
+			if rxpower_col.find_one({'Time': data[0]}) == None:
+				loss += 1
+				print("Loss data:", tmp_data)
+				rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
+	print(loss)
 
-	rxpower_data['Time'] = sorted(list(tmp_rxpower_data))
-	for i in range(len(rxpower_data['Time'])):
-		rxpower_data['Power'].append(tmp_rxpower_data[rxpower_data['Time'][i]])
-		rxpower_data['Time'][i] = datetime.fromtimestamp(rxpower_data['Time'][i])
-	rxpower_data['Power'] = normalize(rxpower_data['Power'], 0, 40)
 
-	# Them du lieu RXPower vao danh sach ve do thi
-	plot_signals.append(
-		{'name': 'RXPower (0 - 40)',
-		'style': 'c-',
-		'x': np.array(rxpower_data['Time']),
-		'y': np.array(rxpower_data['Power'])
-		})
+if __name__ == '__main__':
+	rxpower_data(os.listdir('rxpower/'))

@@ -1,0 +1,132 @@
+[
+	{
+		"collection": "airbox",
+		"field": "Airbox_PM1",
+		"minValue": 0,
+		"maxValue": 300,
+		"minNorm": 0,
+		"maxNorm": 1,
+		"kwarg": {
+			"color": "orange",
+			"linestyle": "--",
+			"label": "Airbox_PM1"
+		}
+	},
+	{
+		"collection": "airbox",
+		"field": "Airbox_PM25",
+		"minValue": 0,
+		"maxValue": 300,
+		"minNorm": 0,
+		"maxNorm": 1,
+		"kwarg": {
+			"color": "green",
+			"linestyle": "--",
+			"label": "Airbox_PM25"
+		}
+	},
+	{
+		"collection": "airbox",
+		"field": "Airbox_PM10",
+		"minValue": 0,
+		"maxValue": 300,
+		"minNorm": 0,
+		"maxNorm": 1,
+		"kwarg": {
+			"color": "blue",
+			"linestyle": "--",
+			"label": "Airbox_PM10"
+		}
+	},
+	{
+		"collection": "airbox",
+		"field": "Airbox_Temperature",
+		"minValue": 0,
+		"maxValue": 50,
+		"minNorm": 0,
+		"maxNorm": 1,
+		"kwarg": {
+			"color": "red",
+			"linestyle": "--",
+			"label": "Airbox_Temperature"
+		}
+	},
+	{
+		"collection": "wunderground",
+		"field": "Wunderground_Condition",
+		"minValue": null,
+		"maxValue": null,
+		"minNorm": null,
+		"maxNorm": null,
+		"kwarg": {
+			"color": "cyan",
+			"linestyle": "-",
+			"label": "Wunderground_Condition"
+		}
+	},
+	{
+		"collection": "rxpower",
+		"field": "Power",
+		"minValue": 0,
+		"maxValue": 40,
+		"minNorm": 0,
+		"maxNorm": 1,
+		"kwarg": {
+			"color": "orange",
+			"linestyle": "-",
+			"label": "RXPower"
+		}
+	},
+	{
+		"collection": "openweathermap",
+		"field": "OpenWeatherMap_Visibility",
+		"minValue": 0,
+		"maxValue": 10000,
+		"minNorm": 0,
+		"maxNorm": 1,
+		"kwarg": {
+			"color": "green",
+			"linestyle": "-",
+			"label": "OpenWeatherMap_Visibility"
+		}
+	},
+	{
+		"collection": "openweathermap",
+		"field": "OpenWeatherMap_Humidity",
+		"minValue": 0,
+		"maxValue": 100,
+		"minNorm": 0,
+		"maxNorm": 1,
+		"kwarg": {
+			"color": "blue",
+			"linestyle": "-",
+			"label": "OpenWeatherMap_Humidity"
+		}
+	},
+	{
+		"collection": "openweathermap",
+		"field": "OpenWeatherMap_Temperature",
+		"minValue": 0,
+		"maxValue": 50,
+		"minNorm": 0,
+		"maxNorm": 1,
+		"kwarg": {
+			"color": "red",
+			"linestyle": "-",
+			"label": "OpenWeatherMap_Temperature"
+		}
+	},
+	{
+		"collection": "darksky",
+		"field": "Darksky_PrecipIntensity",
+		"minValue": 0,
+		"maxValue": 50,
+		"minNorm": 0,
+		"maxNorm": 1,
+		"kwarg": {
+			"color": "cyan",
+			"linestyle": "--",
+			"label": "Darksky_PrecipIntensity"
+		}
+	}
+]

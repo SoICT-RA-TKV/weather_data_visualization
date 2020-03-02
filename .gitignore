@@ -1,4 +1,6 @@
 /draft
+/node_modules
+/backup
 *.eps
 *.png
 *.log

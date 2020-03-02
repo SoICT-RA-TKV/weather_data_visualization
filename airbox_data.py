@@ -4,18 +4,25 @@ import numpy as np
 from collections import namedtuple
 from datetime import datetime, timedelta
 from utils import *
+import pymongo
+import json
+import os
+
+mongo_client = pymongo.MongoClient("mongodb://sv2.teambit.tech:27017/")
+weather_db = mongo_client['weather']
+airbox_col = weather_db['airbox']
 
 NaN = np.NaN
 
 # Xu ly du lieu airbox
-def airbox_data(plot_signals, airbox_files):
+def airbox_data(airbox_files):
 	print("Preprocessing airbox data")
 	airbox_data_fields = ['Time', 'Airbox_PM1', 'Airbox_PM25', 'Airbox_PM10', 'Airbox_Temperature', 'Airbox_Humidity']
-	airbox_data_fields_plot_mask = [1, 1, 1, 1, 1, 0]
-	airbox_data = dict()
-	tmp_airbox_data = dict()
+
+	airbox_data = []
 
 	for airbox_file in airbox_files:
+		print(airbox_file)
 		file = open('./airbox/' + airbox_file, 'r')
 		file.readline()
 		while True:
@@ -38,37 +45,13 @@ def airbox_data(plot_signals, airbox_files):
 			if is_no_signal:
 				for i in range(1, len(airbox_data_fields)):
 					data[i] = NaN
-			tmp_datetime = data[0].timestamp()
-			tmp_airbox_data[tmp_datetime] = dict()
-			for i in range(1, len(airbox_data_fields)):
-				if airbox_data_fields[i] == 0:
-					continue
-				tmp_airbox_data[tmp_datetime][airbox_data_fields[i]] = data[i]
+			tmp_data = dict()
+			for i in range(len(airbox_data_fields)):
+				tmp_data[airbox_data_fields[i]] = data[i]
+			airbox_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
+			# print(tmp_data)
+			# print(airbox_col.find_one({'Time': data[0]}))
 
-	airbox_data = dict()
-	airbox_data['Time'] = sorted(list(tmp_airbox_data))
-	for j in range(1, len(airbox_data_fields)):
-		if airbox_data_fields_plot_mask[j] == 0:
-			continue
-		airbox_data[airbox_data_fields[j]] = []
-		for i in range(len(airbox_data['Time'])):
-			airbox_data[airbox_data_fields[j]].append(tmp_airbox_data[airbox_data['Time'][i]][airbox_data_fields[j]])
-	for i in range(len(airbox_data['Time'])):
-		airbox_data['Time'][i] = datetime.fromtimestamp(airbox_data['Time'][i])
 
-	for i in range(1, 4):
-		airbox_data[airbox_data_fields[i]] = normalize(airbox_data[airbox_data_fields[i]], 0, 300)
-	airbox_data['Airbox_Temperature'] = normalize(airbox_data['Airbox_Temperature'], 0, 50)
-
-	style = {'Airbox_PM1': 'y--', 'Airbox_PM25': 'g--', 'Airbox_PM10': 'b--', 'Airbox_Temperature': 'r--'}
-	norm = {'Airbox_PM1': ' 0-300', 'Airbox_PM25': ' 0-300', 'Airbox_PM10': ' 0-300', 'Airbox_Temperature': ' 0-50'}
-
-	# Them du lieu airbox vao danh sach ve do thi
-	for i in range(1, len(airbox_data_fields)):
-		if airbox_data_fields_plot_mask[i] == 1:
-			plot_signals.append(
-				{'name': airbox_data_fields[i] + norm[airbox_data_fields[i]],
-				'style': style[airbox_data_fields[i]],
-				'x': np.array(airbox_data[airbox_data_fields[0]]),
-				'y': np.array(airbox_data[airbox_data_fields[i]])
-				})
+if __name__ == '__main__':
+	airbox_data(os.listdir('airbox/'))

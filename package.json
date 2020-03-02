@@ -1,0 +1,23 @@
+{
+  "name": "visualization",
+  "version": "1.0.0",
+  "description": "pip install -r requirements.txt",
+  "main": "import.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SoICT-RA-TKV/visualization.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SoICT-RA-TKV/visualization/issues"
+  },
+  "homepage": "https://github.com/SoICT-RA-TKV/visualization#readme",
+  "dependencies": {
+    "dateformat": "^3.0.3",
+    "mongodb": "^3.5.4"
+  }
+}
