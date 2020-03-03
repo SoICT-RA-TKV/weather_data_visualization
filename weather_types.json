@@ -1,19 +1,82 @@
 {
-	"heavy_intensity_rain": 0,
-	"thunderstorm_with_light_rain": 1,
-	"few_clouds": 2,
-	"fog": 3,
-	"light_intensity_drizzle": 4,
-	"drizzle": 5,
-	"thunderstorm_with_rain": 6,
-	"moderate_rain": 7,
-	"light_rain": 8,
-	"thunderstorm": 9,
-	"overcast_clouds": 10,
-	"clear_sky": 11,
-	"haze": 12,
-	"broken_clouds": 13,
-	"mist": 14,
-	"thunderstorm_with_heavy_rain": 15,
-	"scattered_clouds": 16
+	"heavy_intensity_rain": {
+		"id": 0,
+		"color": "#8B0000"
+	},
+	"thunderstorm_with_light_rain": {
+		"id": 1,
+		"color": "#FA8072"
+	},
+	"thunderstorm_withlightrain": {
+		"id": 1.1,
+		"color": "#FA8072"
+	},
+	"few_clouds": {
+		"id": 2,
+		"color": "#9966CC"
+	},
+	"fog": {
+		"id": 3,
+		"color": "#F0FFFF"
+	},
+	"light_intensity_drizzle": {
+		"id": 4,
+		"color": "#F4A460"
+	},
+	"drizzle": {
+		"id": 5,
+		"color": "#FF6347"
+	},
+	"thunderstorm_with_rain": {
+		"id": 6,
+		"color": "#FFFAF0"
+	},
+	"thunderstorm_withrain": {
+		"id": 6.1,
+		"color": "#FFFAF0"
+	},
+	"moderate_rain": {
+		"id": 7,
+		"color": "#98FB98"
+	},
+	"light_rain": {
+		"id": 8,
+		"color": "#B22222"
+	},
+	"thunderstorm": {
+		"id": 9,
+		"color": "#00BFFF"
+	},
+	"overcast_clouds": {
+		"id": 10,
+		"color": "#F08080"
+	},
+	"clear_sky": {
+		"id": 11,
+		"color": "#8FBC8F"
+	},
+	"haze": {
+		"id": 12,
+		"color": "#696969"
+	},
+	"broken_clouds": {
+		"id": 13,
+		"color": "#87CEEB"
+	},
+	"mist": {
+		"id": 14,
+		"color": "#778899"
+	},
+	"thunderstorm_with_heavy_rain": {
+		"id": 15,
+		"color": "#00FF00"
+	},
+	"thunderstorm_withheavyrain": {
+		"id": 15.1,
+		"color": "#00FF00"
+	},
+	"scattered_clouds": {
+		"id": 16,
+		"color": "#FAEBD7"
+	}
 }
