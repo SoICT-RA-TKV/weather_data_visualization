@@ -27,7 +27,7 @@ def rxpower_data(rxpower_files):
 
 	for rxpower_file in rxpower_files:
 		print(rxpower_file)
-		file = open('./rxpower/' + rxpower_file, 'r')
+		file = open(rxpower_file, 'r')
 		while True:
 			data = file.readline()
 			if data == None:
@@ -54,4 +54,10 @@ def rxpower_data(rxpower_files):
 
 
 if __name__ == '__main__':
-	rxpower_data(os.listdir('rxpower/'))
+	rxpower_files = []
+	rxpower_folders = ['rxpower/Collect20200224/', 'rxpower/Collect20200311/', 'rxpower/Collect20200320/']
+	for folder in rxpower_folders:
+		files = os.listdir(folder)
+		for file in files:
+			rxpower_files.append(folder + file)
+	rxpower_data(rxpower_files)
