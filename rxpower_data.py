@@ -7,8 +7,12 @@ from utils import *
 import pymongo
 import json
 import os
+from dotenv import load_dotenv
 
-mongo_client = pymongo.MongoClient("mongodb://sv2.teambit.tech:27017/")
+load_dotenv()
+mongo_uri = os.getenv("URI")
+
+mongo_client = pymongo.MongoClient(mongo_uri)
 weather_db = mongo_client['weather']
 rxpower_col = weather_db['rxpower']
 
@@ -43,19 +47,26 @@ def rxpower_data(rxpower_files):
 			tmp_data = dict()
 			for i in range(len(rxpower_data_fields)):
 				tmp_data[rxpower_data_fields[i]] = data[i]
+			rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
 			# rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
 			# print(tmp_data)
 			# print(rxpower_col.find_one({'Time': data[0]}))
-			if rxpower_col.find_one({'Time': data[0]}) == None:
-				loss += 1
-				print("Loss data:", tmp_data)
-				rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
-	print(loss)
+			# if rxpower_col.find_one({'Time': data[0]}) == None:
+			# 	loss += 1
+				# print("Loss data:", tmp_data)
+				# rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
+	# print(loss)
 
 
 if __name__ == '__main__':
 	rxpower_files = []
-	rxpower_folders = ['rxpower/Collect20200224/', 'rxpower/Collect20200311/', 'rxpower/Collect20200320/']
+	rxpower_folders = []
+	rxpower_children = os.listdir('rxpower')
+	for c in rxpower_children:
+		tmp_path = 'rxpower/' + c + '/'
+		if os.path.isdir(tmp_path):
+			rxpower_folders.append(tmp_path)
+	print(rxpower_folders)
 	for folder in rxpower_folders:
 		files = os.listdir(folder)
 		for file in files:
