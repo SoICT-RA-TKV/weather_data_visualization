@@ -1,3 +1,5 @@
 matplotlib
 numpy
 datetime
+pymongo
+dotenv
