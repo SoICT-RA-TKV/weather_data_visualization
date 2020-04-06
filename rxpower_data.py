@@ -26,10 +26,17 @@ def rxpower_data(rxpower_files):
 	rxpower_data = []
 	loss = 0
 
-	if rxpower_col.find_one({'Time': 'hihi'}) == None:
-		print("Hello")
+	done = []
+	try:
+		f = open('rxpower_done.txt', 'r')
+		done = f.read().split('\n')
+	except:
+		pass
+	f = open('rxpower_done.txt', 'a')
 
 	for rxpower_file in rxpower_files:
+		if rxpower_file in done:
+			continue
 		print(rxpower_file)
 		file = open(rxpower_file, 'r')
 		while True:
@@ -48,14 +55,7 @@ def rxpower_data(rxpower_files):
 			for i in range(len(rxpower_data_fields)):
 				tmp_data[rxpower_data_fields[i]] = data[i]
 			rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
-			# rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
-			# print(tmp_data)
-			# print(rxpower_col.find_one({'Time': data[0]}))
-			# if rxpower_col.find_one({'Time': data[0]}) == None:
-			# 	loss += 1
-				# print("Loss data:", tmp_data)
-				# rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
-	# print(loss)
+		f.write(rxpower_file + '\n')
 
 
 if __name__ == '__main__':
