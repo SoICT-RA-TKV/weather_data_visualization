@@ -30,11 +30,12 @@ def rxpower_data(rxpower_files):
 	try:
 		f = open('rxpower_done.txt', 'r')
 		done = f.read().split('\n')
+		f.close()
 	except:
 		pass
-	f = open('rxpower_done.txt', 'a')
 
 	for rxpower_file in rxpower_files:
+		f = open('rxpower_done.txt', 'a')
 		if rxpower_file in done:
 			continue
 		print(rxpower_file)
@@ -56,6 +57,7 @@ def rxpower_data(rxpower_files):
 				tmp_data[rxpower_data_fields[i]] = data[i]
 			rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
 		f.write(rxpower_file + '\n')
+		f.close()
 
 
 if __name__ == '__main__':
