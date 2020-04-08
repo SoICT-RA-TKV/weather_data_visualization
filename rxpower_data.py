@@ -40,6 +40,8 @@ def rxpower_data(rxpower_files):
 			continue
 		print(rxpower_file)
 		file = open(rxpower_file, 'r')
+		existed = 0
+		new = 0
 		while True:
 			data = file.readline()
 			if data == None:
@@ -55,8 +57,13 @@ def rxpower_data(rxpower_files):
 			tmp_data = dict()
 			for i in range(len(rxpower_data_fields)):
 				tmp_data[rxpower_data_fields[i]] = data[i]
-			rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
-			print({'Time': data[0]}, {'$set': tmp_data})
+			if rxpower_col.find_one({'Time': data[0]}) == None:
+				new += 1
+				rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
+				print("New " + str(new) + ": ", {'Time': data[0]}, {'$set': tmp_data})
+			else:
+				existed += 1
+				print("Exsited " + str(existed) + ": ", {'Time': data[0]}, {'$set': tmp_data})
 		f.write(rxpower_file + '\n')
 		f.close()
 
