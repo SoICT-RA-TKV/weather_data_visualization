@@ -56,6 +56,7 @@ def rxpower_data(rxpower_files):
 			for i in range(len(rxpower_data_fields)):
 				tmp_data[rxpower_data_fields[i]] = data[i]
 			rxpower_col.update_one({'Time': data[0]}, {'$set': tmp_data}, upsert = True)
+			print({'Time': data[0]}, {'$set': tmp_data})
 		f.write(rxpower_file + '\n')
 		f.close()
 
