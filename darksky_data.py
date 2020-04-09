@@ -7,8 +7,11 @@ from utils import *
 import pymongo
 import json
 import os
+from dotenv import load_dotenv
 
-mongo_client = pymongo.MongoClient("mongodb://sv2.teambit.tech:27017/")
+load_dotenv()
+mongo_uri = os.getenv("URI")
+mongo_client = pymongo.MongoClient(mongo_uri)
 weather_db = mongo_client['weather']
 darksky_col = weather_db['darksky']
 

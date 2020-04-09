@@ -5,10 +5,10 @@
 *.png
 *.log
 *.txt
+*.json
 !requirements.txt
 *.sublime-project
 *.sublime-workspace
 __pycache__
 *.zip
 .env
-rxpower_done.txt

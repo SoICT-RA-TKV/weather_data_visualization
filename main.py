@@ -7,15 +7,19 @@ import pymongo
 import json
 from datetime import datetime, timedelta
 from utils import *
+from dotenv import load_dotenv
+import os
 
 
 def main():
-	first_date_string = "2020-03-03 00:00"
-	last_date_string = "2020-03-04 00:00"
+	first_date_string = "2020-04-02 00:00"
+	last_date_string = "2020-04-04 00:00"
 	first = datetime.strptime(first_date_string, '%Y-%m-%d %H:%M')
 	last = datetime.strptime(last_date_string, '%Y-%m-%d %H:%M')
 
-	mongo_client = pymongo.MongoClient("mongodb://sv2.teambit.tech:27017/")
+	load_dotenv()
+	mongo_uri = os.getenv("URI")
+	mongo_client = pymongo.MongoClient(mongo_uri)
 	weather_db = mongo_client['weather']
 
 	plot_signals = json.loads(open('plot.json').read())
@@ -76,7 +80,7 @@ def plot(first, last, plot_signals, weather_db):
 	value_color = dict()
 	value_des = dict()
 	for v in value:
-		v = v.replace(' ', '')
+		v = v.replace(' ', '').replace('_', '')
 		value_id.append(des[v]["id"])
 		value_color[des[v]["id"]] = des[v]["color"]
 		value_des[des[v]["id"]] = v

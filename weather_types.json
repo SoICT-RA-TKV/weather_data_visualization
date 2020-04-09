@@ -1,17 +1,17 @@
 {
-	"heavy_intensity_rain": {
+	"heavyintensityrain": {
 		"id": 0,
 		"color": "#8B0000"
 	},
-	"thunderstorm_with_light_rain": {
+	"thunderstormwithlightrain": {
 		"id": 1,
 		"color": "#FA8072"
 	},
-	"thunderstorm_withlightrain": {
+	"thunderstormwithlightrain": {
 		"id": 1.1,
 		"color": "#FA8072"
 	},
-	"few_clouds": {
+	"fewclouds": {
 		"id": 2,
 		"color": "#9966CC"
 	},
@@ -19,7 +19,7 @@
 		"id": 3,
 		"color": "#F0FFFF"
 	},
-	"light_intensity_drizzle": {
+	"lightintensitydrizzle": {
 		"id": 4,
 		"color": "#F4A460"
 	},
@@ -27,19 +27,19 @@
 		"id": 5,
 		"color": "#FF6347"
 	},
-	"thunderstorm_with_rain": {
+	"thunderstormwithrain": {
 		"id": 6,
 		"color": "#FFFAF0"
 	},
-	"thunderstorm_withrain": {
+	"thunderstormwithrain": {
 		"id": 6.1,
 		"color": "#FFFAF0"
 	},
-	"moderate_rain": {
+	"moderaterain": {
 		"id": 7,
 		"color": "#98FB98"
 	},
-	"light_rain": {
+	"lightrain": {
 		"id": 8,
 		"color": "#B22222"
 	},
@@ -47,11 +47,11 @@
 		"id": 9,
 		"color": "#00BFFF"
 	},
-	"overcast_clouds": {
+	"overcastclouds": {
 		"id": 10,
 		"color": "#F08080"
 	},
-	"clear_sky": {
+	"clearsky": {
 		"id": 11,
 		"color": "#8FBC8F"
 	},
@@ -59,7 +59,7 @@
 		"id": 12,
 		"color": "#696969"
 	},
-	"broken_clouds": {
+	"brokenclouds": {
 		"id": 13,
 		"color": "#87CEEB"
 	},
@@ -67,15 +67,15 @@
 		"id": 14,
 		"color": "#778899"
 	},
-	"thunderstorm_with_heavy_rain": {
+	"thunderstormwithheavyrain": {
 		"id": 15,
 		"color": "#00FF00"
 	},
-	"thunderstorm_withheavyrain": {
+	"thunderstormwithheavyrain": {
 		"id": 15.1,
 		"color": "#00FF00"
 	},
-	"scattered_clouds": {
+	"scatteredclouds": {
 		"id": 16,
 		"color": "#FAEBD7"
 	}
