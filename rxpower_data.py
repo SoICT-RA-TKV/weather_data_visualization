@@ -114,12 +114,17 @@ def count(rxpower_files):
 def import_json(rxpower_files):
 	print("Preprocessing rxpower data")
 
+	load_dotenv()
+	mongo_uri = os.getenv("URI")
 	for rxpower_file in rxpower_files:
 		if not rxpower_file.endswith('.json'):
 			continue
 		print(rxpower_file)
 		# mongoimport rx614b_9.json -d weather -c rxpower --upsert
-		cmd = "mongoimport --mode=merge -d weather -c rxpower %s" % rxpower_file
+		# cmd = 'mongoimport --file "%s" -d weather -c rxpower --quiet' % (rxpower_file, )
+		cmd = 'mongoimport --file "%s" -d weather -c rxpower --quiet ' % (rxpower_file, ) +\
+		'-h %s -u %s -p %s --authenticationDatabase %s --authenticationMechanism %s' %\
+		("sv1.teambit.tech", "crawler", "crawler", "weather", "SCRAM-SHA-1")
 		print(cmd)
 		os.system(cmd)
 

@@ -12,8 +12,8 @@ import os
 
 
 def main():
-	first_date_string = "2020-04-02 00:00"
-	last_date_string = "2020-04-04 00:00"
+	first_date_string = "2020-04-05 00:00"
+	last_date_string = "2020-04-06 00:00"
 	first = datetime.strptime(first_date_string, '%Y-%m-%d %H:%M')
 	last = datetime.strptime(last_date_string, '%Y-%m-%d %H:%M')
 
